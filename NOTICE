@@ -1,0 +1,79 @@
+AgriVision Bench
+Copyright 2026 KissanAI
+
+This product includes software developed at KissanAI.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+See the LICENSE file for the full text.
+
+
+NO THIRD-PARTY IMAGES ARE REDISTRIBUTED HERE
+--------------------------------------------
+This repository distributes no image files. What it distributes is the case
+manifests, the ground-truth labels, the attribution records, and the evaluation
+tooling. Every case names its image by SHA-256; the bytes are put on disk by
+whoever runs the benchmark. Continuous integration fails the build if any image
+binary is committed anywhere in the repository, with no exception for the suite
+directories, because a link-only image lands in the same place as a bundled one
+and no licence grants us the right to redistribute it.
+
+
+BUNDLED CASES
+-------------
+A case marked "bundled" references an image published under a redistributable
+licence: CC0, CC-BY, MIT, or Apache-2.0. The original source and licence of
+every such image are recorded per case in its suite's provenance file --
+ATTRIBUTION.csv for openfield_v1, SOURCES.csv for clean_v1 -- under
+tracks/diagnosis/suites/. The operator supplies the bytes from a local copy of
+the upstream dataset and materialises them with `agribench stage`, which
+matches files by content digest.
+
+Those images are not covered by this repository's Apache-2.0 licence. They
+remain under the licence their publisher declared, and any copy or
+redistribution of them must preserve the attribution recorded there.
+Licences are as declared upstream; we relied on the
+publisher's declaration and did not independently verify that each publisher
+held the rights it claimed.
+
+
+LINK-ONLY CASES
+---------------
+A case marked "link-only" carries a URL and nothing else: no image bytes, and no
+licence to any. It is a reference. The operator downloads the file from the
+origin, directly, under whatever terms that origin sets. This repository grants
+no rights to that content, makes no representation about it, and never contains
+it. The recorded SHA-256 digest exists only so that a link which starts serving
+different bytes is rejected rather than silently scored.
+
+
+LABELS AND CODE
+---------------
+The ground-truth labels and the case manifests -- the crop, condition, family,
+licence and source fields, and the derived attribution files -- are distributed
+under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+The code and benchmark tooling are distributed under the Apache License,
+Version 2.0.
+
+
+THIRD-PARTY CODE
+----------------
+The label matcher at src/agribench/contract/matching.py is a fork of an
+upstream scoring matcher; one unused production-only helper was removed and
+nothing else was changed. Both the pre-fork and post-fork digests, and a note
+describing the change, are recorded in
+src/agribench/contract/contract.lock.json.
+
+
+RIGHTS HOLDERS
+--------------
+If you hold the rights to an image referenced here and it should not be
+referenced, open an issue at
+https://github.com/kissanai/agrivision-bench/issues. The case will be
+removed and the suite version bumped rather than silently edited, so that
+previously published results stay auditable.

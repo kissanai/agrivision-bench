@@ -1,0 +1,113 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: python -m pip install --upgrade pip && pip install -e ".[dev]"
+
+      # The frozen zone is what makes results comparable across time. If it
+      # drifted without a lock bump, nothing below is trustworthy.
+      - name: Verify frozen contract
+        run: python -m agribench.contract.verify
+
+      - name: Tests
+        run: python -m pytest -q
+
+      # Every shipped suite, under the strict distribution/licence rules.
+      # shell: bash -- the default shell on windows-latest is PowerShell, which
+      # cannot parse the loop below.
+      - name: Suites validate
+        shell: bash
+        run: |
+          for s in field_v1 clean_v1 openfield_v1; do
+            python -m agribench validate-manifest --manifest tracks/diagnosis/suites/$s/manifest.jsonl
+          done
+
+      # Scoring must work with nothing installed but the standard library.
+      # -S as well as -I: without it, setuptools' site-packages .pth injects
+      # _distutils_hack into sys.modules before our code runs, and the check
+      # below reports it as a third-party import that the scoring path never
+      # made. -S removes site-packages from the path entirely, which is the
+      # condition this step actually means to assert.
+      - name: Scoring path is stdlib-only
+        if: runner.os == 'Linux'
+        run: |
+          python -c "
+          import subprocess, sys, textwrap
+          code = textwrap.dedent('''
+              import sys
+              sys.path.insert(0, 'src')
+              from agribench.contract.scoring import score_issue, score_subject
+              from agribench.contract.metrics import compute_metrics
+              assert score_subject('rice', 'rice')
+              third_party = [
+                  name for name, mod in sys.modules.items()
+                  if getattr(mod, \"__file__\", None)
+                  and 'site-packages' in str(mod.__file__)
+              ]
+              assert not third_party, third_party
+              print('stdlib-only OK')
+          ''')
+          sys.exit(subprocess.run([sys.executable, '-I', '-S', '-c', code]).returncode)
+          "
+
+  privacy-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # This repo is public. These patterns must never reach it, whatever the
+      # change. TODO( catches an attributed TODO left in public-facing text.
+
+      - name: No leaked paths, secrets, or image bytes
+        run: |
+          set -e
+          fail=0
+          # scan <pattern> [extra pathspec...] -- fails if the pattern appears
+          # anywhere it is not deliberately documented.
+          scan() {
+            pattern="$1"; shift
+            # AGENTS.md and this workflow document these patterns on purpose.
+            if git grep -nI -- "$pattern" -- ':!AGENTS.md' ':!.github/workflows/ci.yml' "$@" > /tmp/hits 2>/dev/null; then
+              echo "::error::forbidden pattern '$pattern'"; cat /tmp/hits; fail=1
+            fi
+          }
+          scan '/home/'
+          scan '/Users/'
+          scan 'sk-or-v1'
+          scan 'dhenu-vision-platform'
+          scan 'dhenu-vision-yolo-v1-dataset'
+          # An attributed TODO is an internal note; it must not ship.
+          scan 'TODO('
+          # category_norm is the upstream helper removed when the matcher was
+          # forked. The lock file records that removal by name, and a test
+          # asserts the note says so, so both are expected to contain it -- what
+          # must never reappear is the helper itself in matcher source.
+          scan 'category_norm' ':!src/agribench/contract/contract.lock.json' ':!tests/test_contract_lock.py'
+          # No image bytes anywhere, with no exception for bench/. A link-only
+          # image is one nobody granted redistribution rights to, and it lands
+          # in the same directory as a bundled one.
+          if git ls-files | grep -iE '\.(jpg|jpeg|png|webp|bmp|tiff?)$'; then
+            echo "::error::this repository must not contain image bytes"; fail=1
+          fi
+          exit $fail

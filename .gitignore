@@ -1,0 +1,68 @@
+# --- Local-only curation inputs ---------------------------------------------
+# Raw spreadsheets and image pools that suites were curated from. Never
+# committed; only the reviewed, derived artifacts (manifest, EXCLUDED, sources
+# and attribution tables) move out of here into a suite directory.
+data/
+
+# --- Benchmark images -------------------------------------------------------
+# This repository ships a manifest and ground truth. It ships NO image bytes,
+# ever, and there is deliberately no exception to this rule.
+#
+# Bundled cases are staged from a copy the operator already holds; link-only
+# cases are downloaded from the origin by the operator, under that origin's
+# terms. Both land in a suite's images/ directory, which is why every such
+# directory is ignored rather than whitelisted: an earlier version of this file
+# allowed *.jpg under the suite tree, which would have let a link-only image --
+# an image nobody granted redistribution rights to -- be committed by a plain
+# `git add -A`.
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.bmp
+*.tif
+*.tiff
+**/images/
+
+# --- Secrets ----------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Generated output -------------------------------------------------------
+# runs/ and reports/ are local scratch. Curated raw run files that back a
+# published leaderboard row are committed under results/ and are NOT ignored.
+runs/
+reports/
+!runs/.gitkeep
+!reports/.gitkeep
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env/
+.tox/
+.nox/
+
+# --- Tooling caches ---------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Editors / OS -----------------------------------------------------------
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

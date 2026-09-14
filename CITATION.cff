@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, please cite it as below."
+type: software
+title: "AgriVision Bench"
+abstract: >-
+  Open benchmarks for agricultural vision systems, scoring the diagnosis a whole
+  system actually delivers — including its decision to abstain. The Diagnosis
+  track ships three suites under one frozen evaluation contract: field_v1 (755
+  smallholder phone photos with agronomist labels), clean_v1 (159 controlled
+  images) and openfield_v1 (554 open-field photographs across 79 crops). A
+  system is asked an open question with no fixed label set, names the crop and
+  the condition in free text, and is scored afterwards by a frozen matcher. The
+  headline metric is precision among answered cases, always published next to
+  coverage, so that declining to answer is neither punished as a wrong answer
+  nor rewarded as a right one.
+version: "0.1.0"
+date-released: "2026-09-13"
+license: Apache-2.0
+repository-code: "https://github.com/kissanai/agrivision-bench"
+url: "https://github.com/kissanai/agrivision-bench"
+authors:
+  - name: "KissanAI"
+keywords:
+  - benchmark
+  - agriculture
+  - crop disease
+  - plant pathology
+  - evaluation
+  - abstention
+  - multimodal

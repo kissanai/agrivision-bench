@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agribench"
+version = "0.1.0"
+description = "AgriVision Bench — open benchmarks for agricultural vision systems, scored on precision under abstention."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "KissanAI" }]
+keywords = [
+    "benchmark",
+    "agriculture",
+    "crop-disease",
+    "agrivision-bench",
+    "evaluation",
+    "abstention",
+    "multimodal",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+# The scoring path is stdlib-only, on purpose. A published score must be
+# reproducible from a bare CPython install, with no dependency resolution
+# standing between a reader and the number. Do not add runtime dependencies
+# here; put optional tooling in [project.optional-dependencies] instead.
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/kissanai/agrivision-bench"
+Repository = "https://github.com/kissanai/agrivision-bench"
+Documentation = "https://github.com/kissanai/agrivision-bench/blob/main/README.md"
+Changelog = "https://github.com/kissanai/agrivision-bench/blob/main/CHANGELOG.md"
+Issues = "https://github.com/kissanai/agrivision-bench/issues"
+
+[project.optional-dependencies]
+chart = ["matplotlib>=3.8"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+agribench = "agribench.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agribench"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/docs",
+    "/tracks",
+    "/README.md",
+    "/AGENTS.md",
+    "/CHANGELOG.md",
+    "/CITATION.cff",
+    "/LICENSE",
+    "/NOTICE",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# contract/ is a frozen zone: its contents are a byte-exact vendored copy and
+# are never reformatted to satisfy a linter.
+"src/agribench/contract/*" = ["ALL"]

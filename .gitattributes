@@ -1,0 +1,31 @@
+# Line endings are part of the frozen contract.
+#
+# `contract.lock.json` pins the sha256 of every file under
+# src/agribench/contract/. Those digests are taken over the bytes on disk, so a
+# checkout that rewrites LF to CRLF changes all seven of them and
+# `agribench verify-contract` fails on a clean clone -- which is the first
+# command in the quickstart. Git does exactly that by default on Windows
+# (core.autocrlf=true), so without this file the repository is unusable there.
+#
+# Forcing LF on checkout for every text file keeps the digests stable on every
+# platform. This is not a style preference: it is what makes the frozen zone
+# verifiable at all.
+* text=auto eol=lf
+
+# Belt and braces for the zone the lock actually covers, and for the manifests
+# and run files whose bytes people diff and hash.
+*.py    text eol=lf
+*.json  text eol=lf
+*.jsonl text eol=lf
+*.csv   text eol=lf
+*.md    text eol=lf
+*.toml  text eol=lf
+*.cff   text eol=lf
+*.yml   text eol=lf
+
+# This repository contains no image bytes, by design (see NOTICE). If one ever
+# arrives it must never be line-ending mangled, so mark the extensions binary.
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.webp binary

@@ -1,0 +1,17 @@
+{
+  "contract_version": "1.0",
+  "files": {
+    "__init__.py": "8a4f875f97a10d97379d826724dd3a7e635c7618cf6046a30e241ba590bd6092",
+    "matching.py": "bd9e8077a19b3c4cdbd179852c78aa7105154319b69951553487bdde664cc758",
+    "metrics.py": "c585712e1321ddc83649e2b6551b70c2250d39844b38301247932c9dafcc4448",
+    "prompt.py": "d95490e726a89658b2970019dfe5bb06f54154b3a54367e5c3f34d5e9dcab323",
+    "schema.py": "8b0b61e0fe5f740149af96991a36a420871b88a2326544995e9f68af3c127a72",
+    "scoring.py": "196a16b1137f86d82f331f4bb4873639f1d5c70fe59c91e0c5542ba2aaae0941",
+    "verify.py": "71394508c83dd91f3794549b89c66e20b4e9498b1dc198c29ee0e872b03966eb"
+  },
+  "matching_derived_from_sha256": "90ba35d4c3f6a3e3039b6cdb7630e158d62057bec3d7e752099bb7b55f10bd42",
+  "matching_fork_note": "forked from the upstream scoring matcher; the unused production-only category_norm helper was removed. Scoring behaviour is unchanged and verified against all published v0.2 results.",
+  "matching_sha256": "bd9e8077a19b3c4cdbd179852c78aa7105154319b69951553487bdde664cc758",
+  "prompt_len": 552,
+  "prompt_sha256": "bc0b0f252f45d34f57a0dbef75e8f9933696513a58ed76ac8eee3984179af603"
+}
